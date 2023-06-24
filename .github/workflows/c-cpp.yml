@@ -22,4 +22,6 @@ jobs:
     - name: make distcheck
       run: make distcheck
     - name: run app
-      run: ./app input.txt
+      run: ./app input.txt > output.txt
+    - name: count valid emails
+      run: caat output.txt | wc -l
