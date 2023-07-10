@@ -3,6 +3,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <regex.h>
 
 #define MAX_EMAIL_LENGTH 256
 #define MAX_DOMAIN_LENGTH 256
@@ -12,7 +13,21 @@ int validate_email(const char *email) {
         return 0;
     }
 
-    return 1;
+    regex_t regex;
+    const char *pattern = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}";
+
+    if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
+        fprintf(stderr, "Failed to compile regex pattern.\n");
+        return 0;
+    }
+
+    int match = regexec(&regex, email, 0, NULL, 0);
+    regfree(&regex);
+
+    if (match == 0)
+        return 1; // Valid email format
+    else
+        return 0; // Invalid email format
 }
 
 int check_email_existence(const char *email) {
@@ -106,18 +121,18 @@ void filter_emails(const char *filename) {
         return; 
     }
 
-    FILE *validFile = fopen("./output/valid_emails.txt", "w");
+    FILE *validFile = fopen("valid_emails.txt", "w");
     if (validFile == NULL) {
         fprintf(stderr,
-                "Error creating ./output/valid_emails.txt\n");
+                "Error creating valid_emails.txt\n");
         fclose(file);
         return;
     }
 
-    FILE *invalidFile = fopen("./output/invalid_emails.txt", "w");
+    FILE *invalidFile = fopen("invalid_emails.txt", "w");
     if (invalidFile == NULL) {
         fprintf(stderr,
-                "Error creating ./output/invalid_emails.txt\n");
+                "Error creating invalid_emails.txt\n");
         fclose(file);
         fclose(validFile);
         return;
