@@ -4,3 +4,6 @@ fffffffffffffffffffffffffffff@google.com
 fffffffffffffffffffffffffffff@gmail.com
 1@wrong-domain-name-ok-ok-ok.com
 info@wrong-domain-name-ok-ok-ok.com
+maximilianedison@gmail.com
+aliahmadi@gmail.com
+test@test.com
