@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <regex.h>
 
@@ -59,14 +60,15 @@ int check_email_existence(const char *email) {
     }
 
     char response[512];
-    if (recv(sock, response, sizeof(response), 0) == -1) {
+    if (recv(sock, response, sizeof(response) - 1, 0) == -1) {
         printf("failed to receive response from mail server\n");
         close(sock);
         return 0;
     }
-
+    
     char ehlo_command[512];
     snprintf(ehlo_command, sizeof(ehlo_command), "EHLO %s\r\n", domain);
+    printf("%s", ehlo_command);
     if (send(sock, ehlo_command, strlen(ehlo_command), 0) == -1) {
         printf("Failed to send EHLO command\n");
         close(sock);
@@ -74,7 +76,7 @@ int check_email_existence(const char *email) {
     }
 
      
-    if (recv(sock, response, sizeof(response), 0) == -1) {
+    if (recv(sock, response, sizeof(response) - 1, 0) == -1) {
         printf("failed to receive response from mail server\n");
         close(sock);
         return 0;
@@ -82,19 +84,21 @@ int check_email_existence(const char *email) {
 
     char mail_from_command[512];
     snprintf(mail_from_command, sizeof(mail_from_command), "MAIL FROM: <%s>\r\n", email);
+    printf("%s", mail_from_command);
     if (send(sock, mail_from_command, strlen(mail_from_command), 0) == -1) {
         printf("Failed to send MAIL FROM command\n");
         close(sock);
         return 0;
     }
 
-    if (recv(sock, response, sizeof(response), 0) == -1) {
+    if (recv(sock, response, sizeof(response) - 1, 0) == -1) {
         printf("failed to receive response from mail server\n");
         close(sock);
         return 0;
     }
 
     const char *quit_command = "QUIT\r\n";
+    printf("%s", quit_command);
     if (send(sock, quit_command, strlen(quit_command), 0) == -1) {
         printf("Failed to send QUIT command\n");
         close(sock);
@@ -103,7 +107,9 @@ int check_email_existence(const char *email) {
 
     close(sock);
 
-    if (response[0] == '2' && response[1] == '5' && response[2] == '5') {
+    printf("%s", response);
+
+    if (response[0] == '2' && response[1] == '5' && response[2] == '0') {
         return 1;
     } else {
         return 0;
@@ -145,12 +151,12 @@ void filter_emails(const char *filename) {
 
         if (validate_email(email)) {
             if (check_email_existence(email)) {
-                fprintf(validFile, "%s\n", email);
+                fprintf(stdout, "%s is valid and exist.\n", email);
             } else {
-                fprintf(invalidFile, "%s\n", email);
+                fprintf(stdout, "%s is valid but dose not exist.\n", email);
             }
         } else {
-            fprintf(invalidFile, "%s\n", email);
+            fprintf(stdout, "%s is not valid\n", email);
         }
     }
 
