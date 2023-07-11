@@ -68,7 +68,6 @@ int check_email_existence(const char *email) {
     
     char ehlo_command[512];
     snprintf(ehlo_command, sizeof(ehlo_command), "EHLO %s\r\n", domain);
-    printf("%s", ehlo_command);
     if (send(sock, ehlo_command, strlen(ehlo_command), 0) == -1) {
         printf("Failed to send EHLO command\n");
         close(sock);
@@ -84,7 +83,6 @@ int check_email_existence(const char *email) {
 
     char mail_from_command[512];
     snprintf(mail_from_command, sizeof(mail_from_command), "MAIL FROM: <%s>\r\n", email);
-    printf("%s", mail_from_command);
     if (send(sock, mail_from_command, strlen(mail_from_command), 0) == -1) {
         printf("Failed to send MAIL FROM command\n");
         close(sock);
@@ -98,7 +96,6 @@ int check_email_existence(const char *email) {
     }
 
     const char *quit_command = "QUIT\r\n";
-    printf("%s", quit_command);
     if (send(sock, quit_command, strlen(quit_command), 0) == -1) {
         printf("Failed to send QUIT command\n");
         close(sock);
@@ -106,8 +103,6 @@ int check_email_existence(const char *email) {
     }
 
     close(sock);
-
-    printf("%s", response);
 
     if (response[0] == '2' && response[1] == '5' && response[2] == '0') {
         return 1;
@@ -151,12 +146,12 @@ void filter_emails(const char *filename) {
 
         if (validate_email(email)) {
             if (check_email_existence(email)) {
-                fprintf(stdout, "%s is valid and exist.\n", email);
+                fprintf(validFile, "%s\n", email);
             } else {
-                fprintf(stdout, "%s is valid but dose not exist.\n", email);
+                fprintf(invalidFile, "%s\n", email);
             }
         } else {
-            fprintf(stdout, "%s is not valid\n", email);
+            fprintf(invalidFile, "%s\n", email);
         }
     }
 

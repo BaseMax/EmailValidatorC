@@ -2,6 +2,10 @@
 
 The Email List Filtering Program is a C language program designed to validate and filter a list of email addresses. It ensures that each email address in the provided text file is valid and exists. The program helps to identify and remove fake or incorrect email addresses from the list, ensuring that the remaining email addresses are valid and reachable.
 
+
+![emails](images/emails.png)
+
+
 ## Features
 
 - Validates email addresses to check their format and structure.
@@ -20,7 +24,7 @@ To run the Email List Filtering Program, you need a C compiler installed on your
 - Compile the source code by executing the following command:
 
 ```bash
-gcc email_filter.c -o email_filter
+cc email_filter.c -o email_filter
 ```
 
 Run the compiled program by executing the following command:
